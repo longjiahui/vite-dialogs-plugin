@@ -1,0 +1,42 @@
+{
+  "name": "@anfo/vite-dialogs-plugin",
+  "version": "1.0.0",
+  "description": "A Vite plugin that auto-generates a type-safe virtual module for mounting Vue dialog/drawer components programmatically.",
+  "keywords": [
+    "vite",
+    "vite-plugin",
+    "vue",
+    "dialog",
+    "drawer",
+    "vue3"
+  ],
+  "author": "anfo",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/dialogs-plugin.cjs",
+  "module": "./dist/dialogs-plugin.js",
+  "types": "./dist/dialogs-plugin.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/dialogs-plugin.d.ts",
+      "import": "./dist/dialogs-plugin.js",
+      "require": "./dist/dialogs-plugin.cjs"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "prepublishOnly": "npm run build"
+  },
+  "peerDependencies": {
+    "vite": ">=4.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.6.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.0.0",
+    "vite": "^6.0.0"
+  }
+}
