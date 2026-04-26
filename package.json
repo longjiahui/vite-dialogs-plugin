@@ -1,6 +1,6 @@
 {
   "name": "@anfo/vite-dialogs-plugin",
-  "version": "1.0.5",
+  "version": "1.0.7",
   "description": "A Vite plugin that auto-generates a type-safe virtual module for mounting Vue dialog/drawer components programmatically.",
   "keywords": [
     "vite",

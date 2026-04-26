@@ -134,7 +134,7 @@ function mountDialog(component, props) {
     // Compute relative path from the dts output dir to the runtime types file.
     // Using a relative path avoids bare-specifier resolution and TypeScript
     // path-alias interference (e.g. projects that alias "@" to "src/").
-    const runtimeAbsPath = resolve(__dirname, "runtime");
+    const runtimeAbsPath = resolve(import.meta.dirname, "runtime");
     let runtimeRel = relative(dtsDir, runtimeAbsPath).replace(/\\/g, "/");
     if (!runtimeRel.startsWith(".")) runtimeRel = `./${runtimeRel}`;
 
