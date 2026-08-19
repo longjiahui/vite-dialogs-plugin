@@ -17,6 +17,39 @@ Import from `@anfo/vite-dialogs-plugin/runtime`:
 | `DialogSettledResult<T>`  | Union of `DialogResolvedResult<T>` and `DialogRejectedResult`                     |
 | `DialogResolvedResult<T>` | `{ type: "resolve" }` or `{ type: "resolve"; value: T }`                          |
 | `DialogRejectedResult`    | `{ type: "reject"; reason?: unknown }`                                            |
+| `configureDialogs()`      | Global app setup — registers Vue plugins to `app.use()` on every dialog app       |
+| `applyDialogAppPlugins()` | Applies the registered plugins to a dialog app (used internally by the plugin)    |
+| `DialogAppPlugin`         | Alias of Vue's `Plugin` — a plugin object or a function taking the app            |
+
+---
+
+## Configuring dialog apps
+
+Every dialog is mounted into its own isolated `createApp()` instance, so plugins registered on the main app (Pinia, Vue Router, UI libraries, i18n…) are not available inside dialogs by default. Use `configureDialogs()` to register plugins that should run `app.use()` on every dialog app.
+
+```ts
+// src/main.ts
+import { createApp } from "vue";
+import { createPinia } from "pinia";
+import ElementPlus from "element-plus";
+import { configureDialogs } from "@anfo/vite-dialogs-plugin/runtime";
+
+const pinia = createPinia();
+
+configureDialogs({
+  use: [
+    pinia, // shared store state between the main app and dialogs
+    ElementPlus,
+    (app) => {
+      app.config.globalProperties.$t = translate;
+    },
+  ],
+});
+
+createApp(App).use(pinia).mount("#app");
+```
+
+Both plugin objects (`{ install(app) {} }`) and plain `(app) => void` functions work — Vue's `app.use()` accepts both. Call `configureDialogs()` once, before any dialog is opened.
 
 ---
 

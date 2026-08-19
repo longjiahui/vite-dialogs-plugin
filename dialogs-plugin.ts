@@ -67,7 +67,7 @@ export function dialogsPlugin(options: DialogsPluginOptions): Plugin {
   function generateModuleCode(files: string[]): string {
     const lines: string[] = [
       `import { createApp } from "vue";`,
-      `import { dialogControllerKey } from "@anfo/vite-dialogs-plugin/runtime";`,
+      `import { applyDialogAppPlugins, dialogControllerKey } from "@anfo/vite-dialogs-plugin/runtime";`,
     ];
     for (let i = 0; i < files.length; i++) {
       lines.push(
@@ -99,6 +99,7 @@ function mountDialog(component, props) {
     };
     const app = createApp(component, props);
     app.provide(dialogControllerKey, controller);
+    applyDialogAppPlugins(app);
     app.mount(host);
   });
   return Object.assign(result, {

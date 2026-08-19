@@ -1,4 +1,4 @@
-import { inject, type InjectionKey } from "vue";
+import { inject, type App, type InjectionKey, type Plugin } from "vue";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -34,6 +34,25 @@ export type DialogExposed<T = void> = {
 export const dialogControllerKey = Symbol("dialogController") as InjectionKey<
     DialogController<unknown>
 >;
+
+export type DialogAppPlugin = Plugin;
+
+let dialogAppPlugins: DialogAppPlugin[] = [];
+
+export function configureDialogs(options: {
+    use?: DialogAppPlugin | DialogAppPlugin[];
+} = {}): void {
+    const use = options.use;
+    dialogAppPlugins = use
+        ? (Array.isArray(use) ? use.flat() : [use]).filter(
+              Boolean,
+          ) as DialogAppPlugin[]
+        : [];
+}
+
+export function applyDialogAppPlugins(app: App<Element>): void {
+    for (const plugin of dialogAppPlugins) app.use(plugin);
+}
 
 // ── Composables ───────────────────────────────────────────────────────────────
 

@@ -89,6 +89,34 @@ dialogs
   .reject((reason) => console.log("rejected:", reason));
 ```
 
+### 5. Share plugins with dialogs (Pinia, Router, UI libs)
+
+Each dialog is mounted into its own isolated `createApp()` instance, so plugins registered on the main app are not available inside dialogs by default. Register them once with `configureDialogs()` — it runs `app.use(...)` on every dialog app:
+
+```ts
+// src/main.ts
+import { createApp } from "vue";
+import { createPinia } from "pinia";
+import ElementPlus from "element-plus";
+import { configureDialogs } from "@anfo/vite-dialogs-plugin/runtime";
+
+const pinia = createPinia();
+
+configureDialogs({
+  use: [
+    pinia, // shared store state between the main app and dialogs
+    ElementPlus,
+    (app) => {
+      app.config.globalProperties.$t = translate;
+    },
+  ],
+});
+
+createApp(App).use(pinia).mount("#app");
+```
+
+Both plugin objects and plain `(app) => void` functions are accepted. Call it once, before any dialog is opened.
+
 ## Plugin Options
 
 | Option | Type | Default | Description |
@@ -102,7 +130,7 @@ dialogs
 | Specifier | Contents |
 |---|---|
 | `@anfo/vite-dialogs-plugin` | Vite plugin factory — `dialogsPlugin(options)` |
-| `@anfo/vite-dialogs-plugin/runtime` | Types, `useDialogContext`, `createDialogExpose`, `DialogExposed` |
+| `@anfo/vite-dialogs-plugin/runtime` | Types, `useDialogContext`, `createDialogExpose`, `configureDialogs`, `DialogExposed` |
 
 ## Project Structure
 
@@ -119,7 +147,7 @@ src/
 
 1. On build start (and on file add/remove in dev), the plugin scans `dir` for matching `.vue` files.
 2. It generates a virtual module (`virtual:dialogs`) that imports each component and wraps it in `mountDialog()`.
-3. `mountDialog()` creates an isolated `createApp()` instance per call, provides a `DialogController` via injection, mounts it into a temporary `<div>`, and returns a Promise-based handle.
+3. `mountDialog()` creates an isolated `createApp()` instance per call, applies any plugins registered via `configureDialogs()`, provides a `DialogController` via injection, mounts it into a temporary `<div>`, and returns a Promise-based handle.
 4. When the component calls `resolve(value)` or `reject(reason)`, the app is unmounted and the host element removed automatically.
 5. A `.d.ts` file is written so every `dialogs.*` entry is typed end-to-end — props, return value, and callbacks.
 
